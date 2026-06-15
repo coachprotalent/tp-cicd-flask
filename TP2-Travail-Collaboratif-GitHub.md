@@ -639,7 +639,29 @@ Dans **Settings → General → Pull Requests**, choisissez en équipe :
 - **Squash and merge** (recommandé) : un seul commit propre par PR sur `main`.
 - Cochez **Automatically delete head branches** : nettoie les branches fusionnées.
 
-## 10.6 Idées d'améliorations (mini-projets)
+## 10.6 Afficher l'état des workflows avec des badges
+
+> 💡 **Badge** : une petite image qui affiche en temps réel l'état d'un workflow (✅ vert / ❌ rouge) directement dans le README. D'un coup d'œil, toute l'équipe voit si `main` est saine — un vrai réflexe de travail collaboratif.
+
+Ajoutez ces lignes tout en **haut** de votre `README.md` (remplacez `<USER>` par votre pseudo GitHub ou le nom de votre organisation) :
+
+```markdown
+![CI](https://github.com/<USER>/tp-cicd-flask/actions/workflows/ci.yml/badge.svg)
+![CD](https://github.com/<USER>/tp-cicd-flask/actions/workflows/cd.yml/badge.svg)
+```
+
+> 💡 **Cibler une branche précise** : par défaut le badge reflète l'état de la **branche par défaut** du dépôt. Si votre branche par défaut n'exécute pas le workflow (ex. une branche `starter`), le badge afficherait « no status ». Pointez alors explicitement la bonne branche avec `?branch=` :
+> ```markdown
+> ![CI](https://github.com/<USER>/tp-cicd-flask/actions/workflows/ci.yml/badge.svg?branch=main)
+> ```
+
+> 💡 **Récupérer l'URL automatiquement** : sur GitHub, onglet **Actions → (choisir le workflow) → ··· → Create status badge** : GitHub génère le Markdown prêt à copier, avec la bonne branche.
+
+> ✅ **Checkpoint 10** — Après un `git push`, les badges apparaissent dans le README affiché sur GitHub : **vert** si le dernier run a réussi, **rouge** sinon. Un clic sur un badge ouvre la page Actions du workflow.
+
+> 🎯 **Exercice 10** — Ouvrez une PR qui casse volontairement un test, fusionnez-la (ou observez sur la branche), puis regardez le badge CI passer au **rouge**. Corrigez : il repasse au **vert**. Le badge est le « thermomètre » public de la santé de votre dépôt.
+
+## 10.7 Idées d'améliorations (mini-projets)
 
 - **Dependabot + auto-merge** des mises à jour mineures (avec CI verte obligatoire).
 - **Labels et milestones** pour organiser le travail.
@@ -663,6 +685,7 @@ Dans **Settings → General → Pull Requests**, choisissez en équipe :
 | `main` inviolable | Rulesets (PR + revue + CI obligatoires) | 7 |
 | Pipeline CI/CD d'équipe | GitHub Actions (réutilisé du TP 1) | 8 |
 | Conflits de fusion | `git merge` + résolution | 9 |
+| Visibilité de l'état | Badges de workflow dans le README | 10 |
 | Pro-level | issues, CONTRIBUTING, signed commits, squash | 10 |
 
 Bravo 👏 — vous savez maintenant collaborer **à plusieurs** sur un dépôt GitHub avec les mêmes garanties de qualité et de sécurité que le pipeline CI/CD du TP 1.

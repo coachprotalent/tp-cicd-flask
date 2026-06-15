@@ -1,5 +1,8 @@
 # TP CI/CD — API de tâches (Flask)
 
+[![CI](https://github.com/coachprotalent/tp-cicd-flask/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coachprotalent/tp-cicd-flask/actions/workflows/ci.yml)
+[![CD](https://github.com/coachprotalent/tp-cicd-flask/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/coachprotalent/tp-cicd-flask/actions/workflows/cd.yml)
+
 Application support des TP CI/CD & DevSecOps.
 
 - 📘 [TP 1 — CI/CD & DevSecOps](./TP-CICD-DevSecOps.md)
