@@ -109,9 +109,11 @@ Deux options selon votre contexte :
 - **Option A (recommandée en formation)** : le formateur crée **une organisation GitHub** et **un dépôt par équipe**, puis ajoute les membres comme **collaborateurs** avec le rôle *Write*.
 - **Option B** : un·e membre de l'équipe crée un dépôt personnel et invite les autres comme collaborateurs (**Settings → Collaborators → Add people**).
 
-Le contenu de départ est celui du **TP 1** (l'application Flask + le pipeline). Réutilisez le code de l'Annexe A du TP 1, ou repartez de votre dépôt du TP 1.
+Le contenu de départ est celui du **TP 1 terminé** : l'application Flask, ses tests **et** le pipeline CI/CD (`ci.yml`, `cd.yml`). Ce TP 2 réutilise ce pipeline ; il ne le reconstruit pas. En revanche, les fichiers de **collaboration** (`.pre-commit-config.yaml`, `CODEOWNERS`, `.env.example`, template de PR, `CONTRIBUTING.md`) **ne doivent pas encore exister** : c'est vous qui allez les créer au fil du TP.
 
-> 📝 **Note pour le formateur** : créez le dépôt avec, dès le départ, l'application Flask, les tests, et le `ci.yml` du TP 1. Les apprenants se concentreront sur la **collaboration**, pas sur la reconstruction du pipeline.
+> 🌿 **Branches du dépôt de référence** : la branche **`starter`** contient le squelette de départ du **TP 1** (sans pipeline) ; la branche **`main`** contient la **solution complète des deux TP** (corrigé). Pour le TP 2, le bon point de départ est **« TP 1 terminé »** : soit votre dépôt après avoir fait le TP 1, soit un dépôt fourni par le formateur dans cet état.
+
+> 📝 **Note pour le formateur** : préparez le dépôt d'équipe avec l'application, les tests et le pipeline du TP 1 **déjà en place**, mais **sans** les fichiers de collaboration listés ci-dessus (les apprenants les créeront). Le plus simple : faire jouer le TP 1 à l'équipe d'abord, puis enchaîner sur ce TP 2 sur le même dépôt.
 
 ## 0.2 Définir les rôles dans l'équipe
 

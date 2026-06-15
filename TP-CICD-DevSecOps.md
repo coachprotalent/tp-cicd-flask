@@ -101,15 +101,25 @@ Installez et créez les éléments suivants **avant** la première séance :
 2. Cliquez sur le bouton **Fork** (en haut à droite).
 3. Choisissez votre compte comme destination. Vous obtenez `https://github.com/<VOTRE-USER>/tp-cicd-flask`.
 
-> 📝 **Note pour le formateur** : le code de démarrage complet est fourni à la section [Annexe A](#annexe-a--code-de-démarrage-complet). Créez un dépôt GitHub, déposez-y ces fichiers, et donnez le lien aux apprenants à forker. Vous pouvez aussi cocher *Template repository* dans les *Settings* du dépôt pour permettre « Use this template ».
+> 🌿 **Important — partez de la branche `starter`** : ce TP démarre d'un **squelette minimal** (l'application Flask + ses tests, **sans** le pipeline ni Docker — c'est vous qui allez les construire). Ce squelette est sur la branche **`starter`**. La branche **`main`** contient, elle, la **solution complète** (le corrigé) : n'y jetez un œil **qu'en cas de blocage**. Tout votre travail part de `starter`.
+
+> 📝 **Note pour le formateur** : le dépôt de référence contient deux branches — **`main`** (solution complète / corrigé) et **`starter`** (squelette de départ). Pour que les apprenants démarrent du bon contenu, choisissez l'une de ces options :
+> - **(Recommandé)** Dans **Settings → Branches**, définissez **`starter` comme branche par défaut** du dépôt à forker. Au fork, les apprenants seront automatiquement sur le bon contenu, et leur branche de travail (`main` ou `starter`) ne contiendra **pas** le corrigé.
+> - Ou créez un **dépôt étudiant dédié** dont le `main` reprend le contenu de `starter` (ainsi toutes les mentions de `main` dans ce TP fonctionnent telles quelles).
+>
+> Le code de démarrage complet est aussi listé en [Annexe A](#annexe-a--code-de-démarrage-complet).
 
 ## 0.2 Cloner votre fork en local
 
+Clonez **la branche `starter`** (le squelette de départ) :
+
 ```bash
-git clone https://github.com/<VOTRE-USER>/tp-cicd-flask.git
+git clone -b starter https://github.com/<VOTRE-USER>/tp-cicd-flask.git
 cd tp-cicd-flask
 code .          # ouvre le projet dans VS Code
 ```
+
+> 💡 Si votre formateur a déjà fait de `starter` la branche par défaut, un simple `git clone https://github.com/<VOTRE-USER>/tp-cicd-flask.git` suffit (vous arriverez directement sur le bon contenu). Vérifiez avec `git branch` où vous vous trouvez.
 
 ## 0.3 Découvrir la structure du projet
 
@@ -121,10 +131,13 @@ tp-cicd-flask/
 ├── tests/
 │   └── test_main.py       # les tests
 ├── requirements.txt       # dépendances de l'app
-├── requirements-dev.txt   # dépendances de dev (tests, lint…)
+├── requirements-dev.txt   # dépendances de dev (tests, lint, sécurité…)
+├── pyproject.toml         # configuration de ruff
 ├── .gitignore
 └── README.md
 ```
+
+> 💡 **C'est volontairement minimal** : pas de `.github/`, pas de `Dockerfile`. Vous allez créer ces fichiers étape par étape. C'est tout l'intérêt du TP : **construire** le pipeline, pas le recopier.
 
 ## 0.4 Créer un environnement virtuel et lancer l'app
 
