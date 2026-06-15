@@ -125,6 +125,12 @@ Pour ce TP, attribuez des rôles **tournants** (chacun jouera plusieurs rôles) 
 
 > 💡 La règle d'or du collaboratif : **on ne relit jamais sa propre PR**. C'est toujours un·e autre membre qui approuve.
 
+> ⚠️ **Vous faites ce TP SEUL·E ?** GitHub **interdit d'approuver sa propre Pull Request**. Avec une règle « 1 approbation obligatoire » (Étape 7), vous ne pourriez **jamais** fusionner et vous seriez bloqué·e. Trois solutions :
+> 1. **Recommandé** : créez un **2ᵉ compte GitHub** (ou faites-vous inviter un·e binôme) pour jouer le rôle de relecteur.
+> 2. À l'Étape 7, mettez **Required approvals : 0** (vous gardez PR obligatoire + CI verte obligatoire, mais sans revue humaine).
+> 3. Désactivez temporairement le ruleset le temps de fusionner.
+> Les encadrés « 👤 En solo » de ce TP vous rappelleront quoi adapter.
+
 ## 0.3 Cloner le dépôt partagé
 
 ```bash
@@ -274,6 +280,8 @@ pre-commit run --all-files
 ```
 
 La première fois, pre-commit télécharge les outils (cela peut prendre une minute). Ensuite c'est quasi instantané.
+
+> ⚠️ **Sous Windows (notamment en entreprise)** : à sa première exécution, le hook **gitleaks** télécharge un binaire. Derrière un **proxy d'entreprise**, ce téléchargement peut échouer avec une erreur peu claire. Si c'est le cas, installez gitleaks manuellement une fois (`winget install gitleaks`) ou assurez-vous que Docker Desktop est démarré, puis relancez `pre-commit run --all-files`.
 
 > ✅ **Checkpoint 3** — `pre-commit run --all-files` se termine, et les hooks corrigent/valident vos fichiers. Si un hook modifie des fichiers (ex. `ruff-format`), réindexez-les (`git add`) avant de commiter.
 
@@ -435,6 +443,10 @@ Créez `.github/CODEOWNERS` (remplacez par les pseudos GitHub de l'équipe) :
 /Dockerfile         @membre1
 ```
 
+> ⚠️ **Remplacez impérativement `@membre1` / `@membre2` par de VRAIS pseudos GitHub** de collaborateurs ayant accès au dépôt. Si un pseudo n'existe pas ou n'est pas collaborateur, GitHub considère le fichier comme **invalide** et l'ignore (au mieux), ou — si vous activez plus tard « Require review from Code Owners » — rend **toute fusion impossible** (personne ne peut fournir la revue exigée).
+>
+> 👤 **En solo** : n'activez **pas** « Require review from Code Owners » à l'Étape 7, sinon vous bloquerez vos propres PR.
+
 ## 6.3 Ouvrir une Pull Request
 
 1. Poussez votre branche (déjà fait à l'Étape 4).
@@ -470,10 +482,14 @@ Sur GitHub : **Settings → Rules → Rulesets → New branch ruleset**.
 - **Enforcement status** : `Active`
 - **Target branches** : `Include default branch` (cible `main`)
 - Activez les règles suivantes :
-  - ✅ **Require a pull request before merging** → définissez **Required approvals : 1** (au moins une revue)
-  - ✅ **Require status checks to pass** → sélectionnez les jobs de la CI du TP 1 (Lint & Tests, SAST, etc.)
+  - ✅ **Require a pull request before merging** → définissez **Required approvals : 1** (au moins une revue). 👤 **En solo : mettez 0** (voir l'encadré de l'Étape 0).
+  - ✅ **Require status checks to pass** → sélectionnez le check **« Lint & Tests »**. ⚠️ Voir l'avertissement ci-dessous avant d'ajouter les autres.
   - ✅ **Require branches to be up to date before merging**
   - ✅ **Block force pushes**
+
+> ⚠️ **Choisir les bons status checks obligatoires.** Le nom affiché est celui du **job** (`Lint & Tests`, `SAST (Bandit)`, `Build & Scan image (Trivy)`…), pas l'identifiant YAML. Deux pièges :
+> 1. Les checks n'apparaissent dans la liste **qu'après au moins une exécution** de la CI. Poussez une PR d'abord, sinon la liste est vide.
+> 2. Ne rendez obligatoire que **« Lint & Tests »** (fiable). Le job **Trivy** peut échouer pour des CVE de l'image de base (hors de votre contrôle) et le bloquer en « required » empêcherait **toute** fusion. Vous l'ajouterez comme requis seulement quand il est stable.
 
 > 💡 **Résultat concret** : impossible de pousser directement sur `main`, impossible de fusionner une PR sans **1 approbation** et sans **CI verte**. `main` est blindée.
 
@@ -532,6 +548,8 @@ Reprenez l'**environnement protégé `production`** du TP 1 (Settings → Enviro
 
 > ✅ **Checkpoint 8** — Une PR fusionnée déclenche le CD ; l'application se redéploie sur Azure. Le pipeline complet du TP 1 fonctionne **dans le cadre collaboratif**.
 
+> 💡 **Pas encore configuré Azure ?** Le `cd.yml` a besoin des secrets `AZURE_CREDENTIALS`, `ACR_LOGIN_SERVER` et `AZURE_WEBAPP_NAME` (créés à l'Étape 8 du TP 1). Sans eux, le job CD sera **rouge** dès `azure/login` — **c'est normal et ce n'est pas grave** : le CD se déclenche **après** la fusion (sur `push: main`), il ne tourne **pas** sur les Pull Requests, donc il **ne bloque jamais vos PR**. Concentrez-vous sur la CI (verte) ; activez le CD quand l'infra Azure du TP 1 est prête.
+
 > 🎯 **Exercice 8** — En équipe : chaque membre ouvre une petite PR (ex. ajouter une route ou un test). Faites-les relire, fusionner l'une après l'autre, et observez les déploiements s'enchaîner. Vous venez de simuler une vraie journée d'équipe.
 
 ---
@@ -546,6 +564,8 @@ Reprenez l'**environnement protégé `production`** du TP 1 (Settings → Enviro
 2. **A** et **B** modifient **la même ligne** du `README.md` (par exemple le titre), avec des textes différents.
 3. **A** ouvre une PR, la fait valider, et la **fusionne** en premier.
 4. **B** ouvre sa PR : GitHub indique **« This branch has conflicts »**.
+
+> 👤 **En solo** : jouez les deux rôles. Depuis une `main` à jour, créez **deux** branches (`git switch -c conflit-a`, puis revenez sur main et `git switch -c conflit-b`). Modifiez la **même ligne** du README dans chacune. Fusionnez `conflit-a` en premier (via PR), puis ouvrez la PR de `conflit-b` : le conflit apparaît, et vous le résolvez avec la procédure 9.2.
 
 ## 9.2 Résoudre le conflit en local
 
@@ -571,9 +591,11 @@ Titre proposé par A (déjà sur main)
 
 ```bash
 git add README.md
-git commit                     # finalise la fusion
+git commit -m "merge: résout le conflit du README avec main"   # finalise la fusion
 git push
 ```
+
+> ⚠️ **N'oubliez pas le `-m "..."`** : `git commit` tout seul ouvre un éditeur de texte (souvent **vim** sous Windows), où un débutant reste vite coincé. Avec `-m`, le message est fourni directement. (Pour sortir de vim si vous y êtes piégé : tapez `:q!` puis Entrée.)
 
 La PR de **B** se met à jour, le conflit disparaît, la CI se relance.
 
@@ -754,7 +776,8 @@ pre-commit autoupdate                 # mettre à jour les versions des hooks
 
 # --- Secrets ---
 cp .env.example .env                  # créer son .env local (jamais commité)
-gitleaks detect                       # scanner les secrets (si gitleaks installé)
+# Windows PowerShell : Copy-Item .env.example .env
+gitleaks detect                       # scan manuel (nécessite le binaire gitleaks installé séparément)
 ```
 
 > 💡 **Rappel des conventions** : branches `feature/`, `fix/`, `chore/`, `docs/` · commits `feat:`, `fix:`, `docs:`, `test:`, `ci:`, `chore:` · une PR = une chose, relue par un·e autre.

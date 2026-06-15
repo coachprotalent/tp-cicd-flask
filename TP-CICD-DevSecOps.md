@@ -293,7 +293,13 @@ Sur GitHub, ouvrez l'onglet **Actions** (ou regardez votre Pull Request : la CI 
 
 > ✅ **Checkpoint 2** — Le workflow « CI » apparaît avec une coche verte ✅. Cliquez dessus pour voir le détail de chaque étape.
 
-> 🎯 **Exercice 2** — Introduisez volontairement une faute (ex. une variable inutilisée `x = 1` dans `app/main.py`), poussez, et observez la CI passer au **rouge** ❌. Lisez le message d'erreur de `ruff`, corrigez, repoussez. Vous venez de vivre la boucle de feedback de la CI !
+> 🎯 **Exercice 2** — Introduisez volontairement une faute pour voir la CI échouer. Ajoutez tout en **haut** de `app/main.py` un import inutilisé :
+> ```python
+> import os   # ruff le détecte : F401 « importé mais jamais utilisé »
+> ```
+> Poussez, et observez la CI passer au **rouge** ❌. Lisez le message d'erreur de `ruff`, **supprimez la ligne**, repoussez. Vous venez de vivre la boucle de feedback de la CI !
+>
+> 💡 **Attention** : une variable inutilisée *au niveau module* (`x = 1`) n'est **pas** signalée par ruff. Utilisez un **import inutilisé** (règle F401) ou une variable inutilisée *à l'intérieur d'une fonction* (règle F841) — ceux-là sont bien détectés.
 
 ---
 
@@ -538,6 +544,8 @@ Ajoutez ce job dans `.github/workflows/ci.yml` :
 
 > ✅ **Checkpoint 7** — Le job « Build & Scan image » construit l'image puis affiche le rapport Trivy. Avec une image `slim` récente, il doit être vert (ou ne lister que des CVE non corrigibles, ignorées).
 
+> 💡 **Si ce job devient rouge** : ce n'est probablement **pas** votre faute. L'image de base `python:3.12-slim` peut accumuler de nouvelles CVE HIGH/CRITICAL au fil des semaines. C'est réaliste (en entreprise, on met à jour l'image de base). Pour ne pas bloquer le TP, vous pouvez temporairement passer `exit-code: "1"` à `exit-code: "0"` (le scan devient **informatif**), ou ajouter un fichier `.trivyignore` listant les CVE concernées.
+
 > 🎯 **Exercice 7** — Lancez Trivy en local pour voir le rapport détaillé :
 > ```bash
 > docker build -t tp-cicd-flask:local .
@@ -557,8 +565,14 @@ Ajoutez ce job dans `.github/workflows/ci.yml` :
 
 ## 8.1 Se connecter et créer les ressources
 
+> ⚠️ **Important (Windows)** — Les commandes ci-dessous utilisent la **syntaxe Bash** : variables `RG="..."`, suffixes aléatoires `$RANDOM`, substitution `$(...)`, et continuations de ligne avec `\`. Elles **ne fonctionnent pas telles quelles dans PowerShell**.
+> Pour cette Étape 8, utilisez l'un de ces environnements :
+> - **Azure Cloud Shell** (recommandé) : bouton `>_` dans le [portail Azure](https://portal.azure.com) — `az` y est déjà connecté et configuré ;
+> - ou **Git Bash** / **WSL** sur votre poste Windows.
+> Si vous préférez rester sous PowerShell, adaptez la syntaxe : `$RG = "rg-tp-cicd"`, `$ACR = "acrtpcicd$(Get-Random -Maximum 99999)"`, interpolation `"$($ACR).azurecr.io/..."`, et continuations avec un backtick `` ` `` au lieu de `\`.
+
 ```bash
-# Connexion (ouvre le navigateur). Sur le terminal de la session : ! az login
+# Connexion (ouvre le navigateur). Si pas de navigateur : az login --use-device-code
 az login
 
 # Variables (adaptez les noms — l'ACR et la Web App doivent être uniques au monde)
@@ -869,7 +883,7 @@ def test_create_task_without_title_returns_400(client):
 ### `requirements.txt`
 
 ```
-Flask==3.0.3
+Flask==3.1.3
 gunicorn==23.0.0
 ```
 
@@ -880,6 +894,7 @@ pytest==8.3.3
 pytest-cov==5.0.0
 ruff==0.6.9
 bandit==1.7.10
+pip-audit==2.7.3
 ```
 
 ### `.gitignore`
