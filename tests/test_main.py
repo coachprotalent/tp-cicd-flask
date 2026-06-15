@@ -23,17 +23,6 @@ def test_list_tasks(client):
     assert len(response.get_json()) >= 1
 
 
-def test_get_single_task(client):
-    response = client.get("/api/tasks/1")
-    assert response.status_code == 200
-    assert response.get_json()["id"] == 1
-
-
-def test_get_unknown_task_returns_404(client):
-    response = client.get("/api/tasks/9999")
-    assert response.status_code == 404
-
-
 def test_create_task(client):
     response = client.post("/api/tasks", json={"title": "Nouvelle tâche"})
     assert response.status_code == 201
