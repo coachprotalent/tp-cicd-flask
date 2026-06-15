@@ -1,0 +1,40 @@
+name: CD - Déploiement Azure
+
+on:
+  push:
+    branches: [ "main" ]      # uniquement quand du code arrive sur main
+
+permissions:
+  contents: read
+
+jobs:
+  deploiement:
+    name: Build, Push (ACR) & Deploy (Web App)
+    runs-on: ubuntu-latest
+    environment: production    # environnement protégé (voir étape 9.3 du TP 1)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Connexion à Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Connexion à l'ACR
+        run: az acr login --name ${{ secrets.ACR_LOGIN_SERVER }}
+
+      - name: Définir le tag de l'image
+        id: vars
+        run: echo "tag=${{ secrets.ACR_LOGIN_SERVER }}/tp-cicd-flask:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build & Push de l'image vers l'ACR
+        run: |
+          docker build -t ${{ steps.vars.outputs.tag }} .
+          docker push ${{ steps.vars.outputs.tag }}
+
+      - name: Déploiement sur Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          images: ${{ steps.vars.outputs.tag }}

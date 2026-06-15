@@ -1,0 +1,101 @@
+name: CI
+
+# Déclencheurs : à chaque push et à chaque Pull Request
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+# Permissions minimales par défaut (bonne pratique de sécurité)
+permissions:
+  contents: read
+
+jobs:
+  lint-et-tests:
+    name: Lint & Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Installer les dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Tests (pytest)
+        run: pytest --cov=app --cov-report=term-missing
+
+  sast:
+    name: SAST (Bandit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Installer Bandit
+        run: pip install bandit
+
+      - name: Analyse SAST du code
+        run: bandit -r app/ -ll
+
+  scan-dependances:
+    name: Scan des dépendances (pip-audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Installer pip-audit
+        run: pip install pip-audit
+
+      - name: Auditer les dépendances
+        run: pip-audit -r requirements.txt
+
+  scan-secrets:
+    name: Scan de secrets (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # nécessaire pour scanner tout l'historique
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-et-scan-image:
+    name: Build & Scan image (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construire l'image Docker
+        run: docker build -t tp-cicd-flask:ci .
+
+      - name: Scanner l'image avec Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: tp-cicd-flask:ci
+          format: table
+          exit-code: "1"             # fait échouer le job si une faille est trouvée
+          ignore-unfixed: true       # ignore les CVE sans correctif disponible
+          severity: HIGH,CRITICAL    # n'échoue que sur les failles graves
