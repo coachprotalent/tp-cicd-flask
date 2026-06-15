@@ -1,0 +1,29 @@
+# CODEOWNERS — désignation automatique des relecteurs de Pull Requests
+# -------------------------------------------------------------------
+# Quand une PR modifie un fichier, GitHub demande automatiquement une revue
+# au(x) "propriétaire(s)" correspondant(s) ci-dessous.
+#
+# ⚠️ À ADAPTER : remplacez @coachprotalent (et ajoutez vos coéquipiers, ex.
+#    @membre2 @membre3) par de VRAIS pseudos GitHub AYANT accès au dépôt.
+#    Un pseudo inexistant ou non-collaborateur rend la ligne invalide
+#    (GitHub l'ignore), et casse les PR si "Require review from Code Owners"
+#    est activé dans le ruleset (Étape 7 du TP 2).
+#
+# Format :  <motif de fichier>   <@utilisateur ou @org/équipe>
+# La DERNIÈRE règle qui correspond à un fichier l'emporte.
+
+# Par défaut, tout le dépôt est relu par :
+*                       @coachprotalent
+
+# Le code applicatif et les tests
+/app/                   @coachprotalent
+/tests/                 @coachprotalent
+
+# Zones sensibles : exiger une relecture dédiée
+/.github/               @coachprotalent
+/Dockerfile             @coachprotalent
+/requirements.txt       @coachprotalent
+/requirements-dev.txt   @coachprotalent
+
+# Documentation des TP
+/*.md                   @coachprotalent
