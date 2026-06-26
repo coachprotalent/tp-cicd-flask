@@ -33,3 +33,13 @@ def test_create_task(client):
 def test_create_task_without_title_returns_400(client):
     response = client.post("/api/tasks", json={})
     assert response.status_code == 400
+
+def test_get_single_task(client):
+    response = client.get("/api/tasks/1")
+    assert response.status_code == 200
+    assert response.get_json()["id"] == 1
+
+
+def test_get_unknown_task_returns_404(client):
+    response = client.get("/api/tasks/9999")
+    assert response.status_code == 404
