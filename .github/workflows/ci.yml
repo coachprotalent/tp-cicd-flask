@@ -90,7 +90,7 @@ jobs:
         run: docker build -t tp-cicd-flask:ci .
 
       - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@master
         with:
           image-ref: tp-cicd-flask:ci
           format: table
