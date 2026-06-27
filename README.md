@@ -52,4 +52,4 @@ pytest --cov=app --cov-report=term-missing
 
 ## Auteur
 
-- (votre prénom ici)
+QUEEN
