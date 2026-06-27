@@ -49,3 +49,21 @@ jobs:
 
       - name: Run SAST analysis
         run: bandit -r app/ -ll
+        continue-on-error: true
+  scan dependencies:     
+      - name: Dependency Scan (pip-audit)
+        uses: python-coverage/python-coverage-action@v1
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install pip-audit
+        run: pip install pip-audit
+
+      - name: Audit dependencies
+        run: pip-audit -r requirements.txt
