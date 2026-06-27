@@ -43,4 +43,3 @@ def test_get_single_task(client):
 def test_get_unknown_task_returns_404(client):
     response = client.get("/api/tasks/9999")
     assert response.status_code == 404
-    
