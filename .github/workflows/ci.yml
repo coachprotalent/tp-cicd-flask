@@ -34,3 +34,19 @@ jobs:
 
       - name: Tests (pytest)
         run: pytest --cov=app --cov-report=term-missing
+    sast:
+    name: SAST (Bandit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Bandit
+        run: pip install bandit
+
+      - name: Run SAST analysis
+        run: bandit -r app/ -ll
