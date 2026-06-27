@@ -1,12 +1,10 @@
 name: CI
 
-# Triggers: on every push and every Pull Request
 on:
   push:
     branches: [ "main" ]
   pull_request:
 
-# Minimal default permissions (security best practice)
 permissions:
   contents: read
 
@@ -34,7 +32,8 @@ jobs:
 
       - name: Tests (pytest)
         run: pytest --cov=app --cov-report=term-missing
-    sast:
+
+  sast:
     name: SAST (Bandit)
     runs-on: ubuntu-latest
     steps:
